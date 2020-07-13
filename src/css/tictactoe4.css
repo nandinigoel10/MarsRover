@@ -1,0 +1,245 @@
+body{
+  background-image: url('rovertic.png');
+  background-repeat: no-repeat;
+  position:relative;
+}
+
+#rbutton {
+    border: solid 1px white;
+    background-color: #234723;
+    color: white;
+    padding: 15px 29px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 25px;
+    margin-left: 574px;
+    margin-top:540px;
+    cursor: pointer;
+    position:fixed;
+    font-family: "Ani";
+}
+#resetbutton {
+    background-color: #234723;
+    border: solid 1px white;
+    color: white;
+    padding: 15px 29px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 25px;
+    margin-left:1012px;
+    cursor: pointer;
+    font-family:"Ani";
+    margin-top:365px;
+    position:fixed;
+}
+
+.mbutton {
+    background-color: #234723;
+    border: solid 1px white;
+    color: white;
+    padding: 15px 29px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    margin-left:110px;
+    cursor: pointer;
+    position:fixed;
+    font-family:"Ani";
+    margin-top:520px;
+}
+
+.diff, .stp, .ch{
+    border:solid 1px white;
+    color: white;
+    height:35px;
+    width:150px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 17px;
+    cursor: pointer;
+    font-family:"Ani";
+    background-color: #234723;
+}
+
+#hint{
+    background-color: #234723;
+    border: solid 1px white;
+    color: white;
+    height:70px;
+    width:125px;
+    padding: 15px 29px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 25px;
+    cursor: pointer;
+    font-family:"Ani";
+    margin-top:500px;
+    margin-left:1012px;
+    position:fixed;
+}
+#maxhint{
+    font-size:16px;
+    font-family:"fontin";
+    margin-top:580px;
+    margin-left:1010px;
+    position:fixed;
+}
+
+#rbutton:hover,#resetbutton:hover,.diff:hover,.stp:hover,.mbutton:hover,.ch:hover, #hint:hover{
+    background-color:#286743;
+}
+
+.diff:focus,.stp:focus{
+    background-color:#286743;
+}
+
+.difficulty{
+    position:fixed;
+    display:inline-block;
+    margin-left:125px;
+    width:150px;
+    margin-top:85px;
+}
+
+.startP{
+    position:fixed;
+    width:150px;
+    display:inline-block;
+    margin-left:125px;
+    margin-top:315px;
+}
+
+#k{
+    position:fixed;
+    margin-left:125px;
+    margin-top:435px;
+}
+
+.dropdown{
+    display:none;
+    position:fixed;
+    width:150px;
+    margin-left:275px;
+    margin-top:435px;
+}
+
+.theme:hover .dropdown{
+    display:inline-block;
+}
+
+.cell {
+    border: 4px solid white;
+    height:73px;
+    width: 73px;
+    text-align: center;
+    vertical-align: middle;
+    color: white;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-size: 55px;
+    cursor: pointer;
+}
+p{
+    position:fixed;
+    color:#ffffff;
+    text-shadow: 2px 2px #000000;
+    font-family:"Ani";
+    font-size:25px;
+}
+#lheading{
+    margin-left:969px;
+    margin-top:150px;
+}
+#dheading{
+    margin-left:122px;
+    margin-top:30px;
+}
+#sheading{
+    margin-left:73px;
+    margin-top:260px;
+}
+
+#tic {
+    border-collapse: collapse;
+    margin-left: 480px;
+    top: 170px;
+    position:fixed;
+}
+
+#leaderboard{
+    border-collapse: collapse;
+    margin-left:930px;
+    top: 230px;
+    width:280px;
+    position:fixed;
+}
+.lead {
+    border: 2px solid #000000;
+    background-color: #f2f2f2;
+    height: 50px;
+    width: 50px;
+    text-align: center;
+    vertical-align: middle;
+    color: black;
+    font-family: "Ani";
+    font-size: 20px;
+}
+
+table tr:first-child td {
+    border-top:0;
+}
+table tr td:first-child {
+    border-left:0;
+}
+table tr:last-child td {
+    border-bottom:0;
+}
+table tr td:last-child {
+    border-right:0;
+}
+
+
+.endgame {
+    display: none;
+    border: solid 2px white;
+    width: 220px;
+    top: 258px;
+    background-color: #215111;
+    font-family: "Bebas";
+    position: absolute;
+    margin-left: 522px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    text-align: center;
+    border-radius: 5px;
+    color: white;
+    font-size: 2em;
+    text-shadow:1px 2px #000000;
+    position:fixed;
+    opacity:0.85;
+}
+
+#dboard{
+    background-color: #444444;
+    margin-left:50px;
+    margin-top:20;
+    width:300px;
+    height:650px;
+    float:left;
+    position:fixed;
+}
+
+
+#lboard{
+    background-color: #444444;
+    margin-left:920px;
+    margin-top:20;
+    width:300px;
+    height:650px;
+    float:left;
+    position:fixed;
+}
