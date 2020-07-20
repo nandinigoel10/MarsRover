@@ -8,6 +8,8 @@ var limit=100;
 var origBoard;
 var aiScore = '0';
 var huScore = '0';
+var isHint = false;
+var h=0;
 var ties = '0';
 const huPlayer = 'O';
 const aiPlayer = 'X';
@@ -46,6 +48,7 @@ function startGame(){
 }
 
 function turnClick(square){
+    isHint=false;
     for(var i =0; i<cells.length; i++){
 	cells[i].style.removeProperty('background-color');
     }
@@ -176,10 +179,6 @@ function checkTie(){
 
 
 function recurse(b){
-	
-/*
-function recurse uses the minmax algorithm to decide if player 1 is going to win or player 2 is going to win. If player 1 is winning it returns 1, -1 for player 2 and 0 for draw. It assusmes that both players play perfectly.
-*/
     var y = winner(b);
     if(y==1)
         return 1;
@@ -187,7 +186,7 @@ function recurse uses the minmax algorithm to decide if player 1 is going to win
         return -1;
     else if(y==4)
         return 0;
-    if(depth>=limit)//if the depth exceeds the maximum depth limit then it assumes a tie
+    if(depth>=limit)
         return 0;
     var countx=0;
     var counto=0;
@@ -228,8 +227,6 @@ function recurse uses the minmax algorithm to decide if player 1 is going to win
             max = num[i];
     }
     if(depth==0){
-	/*function recurse doesnt return the best move possible, only the overall winner, so to decide which moves are suitable it stores wether a specific move will result in a win or a loss in a global array
-	*/
         for(var i=0;i<9;i++){
             if(player2turn)
                 player2[i]=num[i];
@@ -298,9 +295,6 @@ function winner(x){
 }
 
 function choose(x,r){
-/*
-function choose finds a random good move to play, the random element was added to make the AI not make the same moves everytime
-*/
     var numwin=0;
     var numdraw=0;
     var numloss=0;
@@ -362,10 +356,7 @@ function choose finds a random good move to play, the random element was added t
 }
 
 function giveHint(){
-    var r = limit;
-    limit = 100;
     recurse(convertBoard(origBoard));
-    limit = r;
     if(playerTurn)
 	return choose(player1,1);
     else
@@ -373,9 +364,13 @@ function giveHint(){
 }
 
 function showHint(){
-    if(h<3){
+    if(h<3&&!isHint){
+	var m = limit;
+	limit = 100;
+	isHint = true;
 	document.getElementById(giveHint()).style.backgroundColor = "#9ad333";
 	h++;
+	limit = m;
     }
 }
 

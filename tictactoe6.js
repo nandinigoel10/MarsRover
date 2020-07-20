@@ -7,14 +7,13 @@ var depth=0;
 var limit=8;
 var huScore = 0;
 var ties = 0;
+var isHint = false;
 var isWon = false;
 const huPlayer = 'O';
 const aiPlayer = 'X';
-var winstreak = [0,0,0,0];
-var player1 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var player2 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var x = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var moves = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var winstreak = [0,0,0,0,0];
+var player1 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var player2 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 const cells = document.querySelectorAll('.cell');
 startGame();
@@ -30,7 +29,7 @@ function startNew(){
 
 function startGame(){
     document.querySelector(".endgame").style.display = "none";
-    origBoard = Array.from(Array(42).keys());
+    origBoard = Array.from(Array(49).keys());
     for(var i =0; i<cells.length; i++){
 	cells[i].innerText='';
 	cells[i].style.removeProperty('background-color');
@@ -42,11 +41,14 @@ function startGame(){
 }
 
 function turnClick(square){
-     for(var i =0; i<cells.length; i++){
+    isHint=false;
+    for(var i =0; i<cells.length; i++){
 	cells[i].style.removeProperty('background-color');
     }
     if(typeof origBoard[square.target.id] == 'number'){
+	decidelimit();    
 	turn(square.target.id, huPlayer);
+	decidelimit();    
 	turn(bestSpot(), aiPlayer);
 	checkTie();
     }
@@ -54,10 +56,10 @@ function turnClick(square){
 
 function turn(squareId, player){
     if(!isWon){
-    origBoard[squareId] = player;
-    document.getElementById(squareId).innerText = player;
-    let gameWon = checkWin(origBoard, player);
-    if (gameWon) gameOver(gameWon);
+	origBoard[squareId] = player;
+	document.getElementById(squareId).innerText = player;
+	let gameWon = checkWin(origBoard, player);
+	if (gameWon) gameOver(gameWon);
     }
 }
 
@@ -77,10 +79,10 @@ function setDiff(d){
 }
 
 function gameOver(gameWon){
-    for(var i=0; i<4; i++){
+    for(var i=0; i<5; i++){
 	var l =document.getElementById('tic').rows[Math.floor(winstreak[i]/7)].cells;
 	l[winstreak[i]%7].style.backgroundColor = gameWon.player == huPlayer ? "blue" : "red";
-  }
+    }
     for(var i=0; i<cells.length; i++){
 	cells[i].removeEventListener('click', turnClick, false);
     }
@@ -105,7 +107,6 @@ function declareWinner(who){
 function emptySquares(){
     return origBoard.filter(s => typeof s == 'number');
 }
-
 function recurse(b){
     var y = winner(b);
     if(y==1)
@@ -114,58 +115,92 @@ function recurse(b){
         return -1;
     else if(y==4)
         return 0;
-    if(depth>=limit)
-        return 0;
+    if(depth>=limit){
+        var n = decideAdvantage(b);
+        return n;
+    }
     var countx=0;
     var counto=0;
-    for(var i=0;i<42;i++){
+    for(var i=0;i<49;i++){
         if(b[i]==1)
             countx++;
         else if (b[i]==2)
             counto++;
     }
     var player2turn=false;
-    var num =  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    var num =[0];
     var n=1;
     if(countx>counto){
         player2turn=true;
         n=2;
     }
-    var best = run(b);
-    var d =  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    for(var j=0;j<42;j++)
+    var d = [0];
+    for(var j=0;j<49;j++){
         d[j]=b[j];
-    for(var i=0;i<42;i++){
-	if(b[i]!=0){
-	    num[i]=100;
-	}
-	else{
-	    if(player2turn)
-		num[i]=1;
+    }
+    var goodMoves = run(b);
+    if(goodMoves.length==1&&depth==0){
+	for(var i=0;i<49;i++){
+            if(b[i]!=0){
+		num [i] = 100;
+            }
+	    else if(player2turn){
+		num[i] = 1;
+	    }
 	    else{
-		num[i]=-1;
+		num[i] = -1;
 	    }
 	}
+	num[goodMoves[0]]=0;
+	for(var i=0;i<49;i++){
+            if(player2turn)
+                player2[i]=num[i];
+            else
+                player1[i]=num[i];
+        }
+	return 0;
     }
-    for(var i=0;i<best.length;i++){
-        if(b[best[i]]==0){
-            d[best[i]]=n;
+    var z = [0];
+    for(var i=0;i<49;i++){
+        z[i]=0;
+    }
+    for(var i=0;i<goodMoves.length;i++){
+        z[goodMoves[i]]=100;
+    }
+    var solved = false;
+    for(var i=0;i<49;i++){
+        if(b[i]==0&&z[i]==100&&(!solved)){
+            d[i]=n;
             depth ++;
-            num[best[i]]= recurse(d);
+            num[i]= recurse(d);
             depth--;
-            d[best[i]]=0;
+            d[i]=0;
+            if((num[i]==1&&(!player2turn))||(num[i]==-1&&player2turn)){
+                solved = true;
+            }
+        }
+        else if(b[i]!=0){
+            num [i] = 100;
+        }
+        else{
+            if(player2turn){
+                num[i]=2;
+            }
+            else{
+                num[i]=-2;
+            }
         }
     }
     var min = 100;
     var max = -100;
-    for(var i=0;i<42;i++){
+    for(var i=0;i<49;i++){
         if(num[i]<min&&num[i]!=100)
             min = num[i];
         if(num[i]>max&&num[i]!=100)
             max = num[i];
     }
     if(depth==0){
-        for(var i=0;i<42;i++){
+        for(var i=0;i<49;i++){
             if(player2turn)
                 player2[i]=num[i];
             else
@@ -177,8 +212,153 @@ function recurse(b){
     else
         return max;
 }
+function countmoves(x){
+    var n=0;
+    for(var i=0;i<49;i++){
+	if(x[i]!=0){
+	    n++;
+	}
+    }
+    return n;
+}
+function choose(x,h){
+    var n1=1;
+    if(h==2){
+	n1=-1;
+    }
+    var numwin=0;
+    var numwin2=0;
+    var numdraw=0;
+    var numadvantage=0;
+    var numdisadvantage=0;
+    var numloss=0;
+    var numloss2=0;
+    for(var i=0;i<49;i++){
+        if(x[i]==n1){
+            numwin++;
+        }
+        else if(x[i]==(n1*2)){
+            numwin2++;
+        }
+        else if(x[i]==0){
+            numdraw++;
+        }
+        else if(x[i]==-n1){
+            numloss++;
+        }
+        else if(x[i]==(-n1*2)){
+            numloss2++;
+        }
+	else if(x[i]>0&&x[i]<1){
+	    if(h==1){
+		numadvantage++;			
+	    }
+	    else{
+		numdisadvantage++;			
+	    }
+	}
+	else if(x[i]<0&&x[i]>-1){
+	    if(h==1){
+		numdisadvantage++;			
+	    }
+	    else{
+		numadvantage++;			
+	    }	
+	}
+    }
+    if(numwin!=0){
+	var t = Math.floor(Math.random()*numwin);
+	var c=0;
+	for(var i=0;i<49;i++){
+	    if(x[i]==n1){
+	        c++;
+	    }
+	    if(c>t){
+	        return i;
+	    }
+	}
+    }
+    if(numwin2!=0){
+	var t = Math.floor(Math.random()*numwin2);
+	var c=0;
+	for(var i=0;i<49;i++){
+	    if(x[i]==(n1*2)){
+	        c++;
+	    }
+	    if(c>t){
+	        return i;
+	    }
+	}
+    }
+    if(numadvantage!=0){
+	var t = Math.floor(Math.random()*numadvantage);
+	var c=0;
+	for(var i=0;i<49;i++){
+	    if(h==1&&x[i]>0&&x[i]<1){
+	        c++;
+	    }
+	    if(h==2&&x[i]<0&&x[i]>-1){
+	        c++;
+	    }
+	    if(c>t){
+	        return i;
+	    }
+	}
+    }
+    if(numdraw!=0){
+	var t = Math.floor(Math.random()*numdraw);
+	var c=0;
+	for(var i=0;i<49;i++){
+	    if(x[i]==0){
+	        c++;
+	    }
+	    if(c>t){
+	        return i;
+	    }
+	}
+    }
+    if(numdisadvantage!=0){
+	var t = Math.floor(Math.random()*numdisadvantage);
+	var c=0;
+	for(var i=0;i<49;i++){
+	    if(h==1&&x[i]<0&&x[i]>-1){
+	        c++;
+	    }
+	    if(h==2&&x[i]>0&&x[i]<1){
+	        c++;
+	    }
+	    if(c>t){
+	        return i;
+	    }
+	}
+    }
+    if(numloss!=0){
+	var t = Math.floor(Math.random()*numloss);
+	var c=0;
+	for(var i=0;i<49;i++){
+	    if(x[i]==-n1){
+	        c++;
+	    }
+	    if(c>t){
+	        return i;
+	    }
+	}
+    }
+    if(numloss2!=0){
+	var t = Math.floor(Math.random()*numloss2);
+	var c=0;
+	for(var i=0;i<49;i++){
+	    if(x[i]==(-n1*2)){
+	        c++;
+	    }
+	    if(c>t){
+	        return i;
+	    }
+	}
+    }
+}
 function convertBoard(origBoard){
-    var newBoard =[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    var newBoard =[0];
     if(playerTurn){
 	var x = 'X';
 	var o = 'O';
@@ -187,11 +367,11 @@ function convertBoard(origBoard){
 	var x = 'O';
 	var o = 'X';
     }
-    for(var i=0; i<42; i++){
-	if(origBoard[i]==='X'){
+    for(var i=0; i<49; i++){
+	if(origBoard[i]===x){
 	    newBoard[i]=2;
 	}
-	else if(origBoard[i]==='O'){
+	else if(origBoard[i]===o){
 	    newBoard[i]=1;
 	}
 	else
@@ -220,24 +400,20 @@ function findSpot(x){
 	c=1
     }
     if(c===1){
-	var u = run(x);
-	/*recurse(x);
-	console.log(player1);
-	console.log(player2);
-	console.log(u);
-	if(typeof(u)=="number"){
-	    return u;
+	recurse(x);
+	var u;
+	if(playerTurn){
+	    u = choose(player2,2);
 	}
 	else {
-	    return u[0];
-	}*/
+	    u = choose(player1,1);
+	}
 	return u;
     }
     else{
 	return randomchoice(x);
     }
 }
-
 
 function bestSpot(){
     return findSpot(convertBoard(origBoard));   
@@ -269,18 +445,39 @@ function checkTie(){
     }
     return false;
 }
-
+function decideAdvantage(b){
+    var a1 = attack(b,1);
+    var a2 = attack(b,2);
+    var sum=0;
+    sum+=a1[4]*a1[4]*0.1;
+    sum-=a2[4]*a2[4]*0.1;
+    sum+=a1[3]*a1[3]*0.025;
+    sum-=a2[3]*a2[3]*0.025;
+    sum+=a1[2]*a1[2]*0.00625;
+    sum-=a2[2]*a2[2]*0.00625;
+    sum+=a1[1]*a1[1]*(0.00625/4);
+    sum-=a2[1]*a2[1]*(0.00625/4);
+    sum+=a1[0]*a1[0]*(0.00625/16);
+    sum-=a2[0]*a2[0]*(0.00625/16);
+    if(sum>1){
+        sum=0.99;
+    }
+    else if(sum<-1){
+        sum=-0.99;
+    }
+    return sum;
+}
 function randomchoice(b){
-    var p=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    var p=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     var n=0;
-    for(var i=0;i<42;i++){
+    for(var i=0;i<49;i++){
         if(b[i]==0){
             n++;
         }
     }
-    p=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    p=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     var a=0;
-    for(var i=0;i<42;i++){
+    for(var i=0;i<49;i++){
         if(b[i]==0){
             p[a]=i;
             a++;
@@ -293,7 +490,8 @@ function randomchoice(b){
 function run(b){
     var countx=0;
     var counto=0;
-    for(var i=0;i<42;i++){
+    var l;
+    for(var i=0;i<49;i++){
         if(b[i]==1)
             countx++;
         else if (b[i]==2)
@@ -301,132 +499,135 @@ function run(b){
     }
     var n1=0;
     var n2=0;
-    if(playerTurn){
-	if(countx==counto){
-            n1=1;
-            n2=2;
-	}
-	else {
-            n1=2;
-            n2=1;
-	}
+    if(countx==counto){
+        n1=1;
+        n2=2;
     }
-    else{
-	if(countx==counto){
-            n1=2;
-            n2=1;
-	}
-	else {
-            n1=1;
-            n2=2;
-	}
+    else {
+        n1=2;
+        n2=1;
     }
-    var attacklist = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-    
-    var blocklist = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-    
-    var d=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    for(var i=0;i<42;i++){
+    if(countx==0&&counto==0){
+        l = [24];
+        return l;
+    }
+    var attacklist= [[0]];
+    var blocklist = [[0]];
+    var d = [0];
+    for(var i=0;i<49;i++){
         d[i]=b[i];
     }
-    for(var i=0;i<42;i++){
+    for(var i=0;i<49;i++){
         if(b[i]==0){
             d[i]=n1;
-            var c = attack(d,n1);
-            var g = block(d,n1);
+            var  c = attack(d,n1);
+            var  g = block(d,n1);
             attacklist[i] = c;
             blocklist[i] = g;
             d[i]=0;
         }
+	else{
+	    attacklist[i]=[0,0,0,0,0];
+	    blocklist[i]=[0,0,0,0,0];
+	}
     }
-    for(var i =0;i<42;i++){
+    for(var i =0;i<49;i++){
         if(b[i]==0){
-            if(attacklist[i][3]>0){
-                return i;
+            if(attacklist[i][4]>0){
+                l =[i];
+                return l;
             }
         }
     }
     var v;
-    for(v=0;v<42;v++){
+    for(v=0;v<49;v++){
         if(b[v]==0){
             break;
         }
     }
-    var m = blocklist[v][3];
-    for(var i=(v+1);i<42;i++){
+    var m = blocklist[v][4];
+    for(var i=(v+1);i<49;i++){
         if(b[i]==0){
-            if(blocklist[i][3]>m){
-                
-                return i;
+            if(blocklist[i][4]>m){
+                l = [i];
+                return l;
             }
-            else if(blocklist[i][3]<m){
-                return v;
+            else if(blocklist[i][4]<m){
+                l = [v];
+                return l;
             }
         }
     }
-    for(var i =0;i<42;i++){
+    for(var i =0;i<49;i++){
         if(b[i]==0){
-            if(attacklist[i][2]>=2){
-                return i;
+            if(attacklist[i][3]>=2){
+                l = [i];
+                l[0]=i;
+                return l;
             }
         }
     }
-    var attacklistenemy = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-    test = false;
-    for(var i=0;i<42;i++){
+    var attacklistenemy = [[0]];
+    for(var i=0;i<49;i++){
         if(b[i]==0){
             d[i]=n2;
-            var c = attack(d,n2);
+            var  c = attack(d,n2);
             attacklistenemy[i] = c;
             d[i]=0;
         }
+	else{
+	    attacklistenemy[i]=[0,0,0,0,0];
+	}
     }
-    test = true;
-    attacklist = correct(attacklist,b);
-    blocklist = correct(blocklist,b);
-    var moveValue = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    for(var i=0;i<42;i++){
+    attacklist = correct5(attacklist,b);
+    blocklist = correct5(blocklist,b);
+    var moveValue = [0];
+    for(var i=0;i<49 ;i++){
         var sum=0;
-        if(attacklistenemy[i][2]>=2){
-            sum=sum+(attacklistenemy[i][2]*60000);
+        if(attacklistenemy[i][3]>=2){
+            sum=sum+(attacklistenemy[i][3]*16384);
         }
-        sum = sum+(attacklist[i][2]*400000);
-        sum = sum+(blocklist[i][2]*1000);
-        sum = sum+(attacklist[i][1]*10000);
-        sum = sum+(blocklist[i][1]*100);
-        sum = sum+(attacklist[i][0]*10);
-        sum = sum+(blocklist[i][0]*1);
+        sum = sum + decideValue(attacklist[i],blocklist[i]);
         moveValue[i] = sum;
     }
-    var pos=choose(moveValue);	    
-    //var w = bestMoves(moveValue);
-    /*for(var i = 0; i<w.length; i++){
-	cells[w[i]].style.backgroundColor = "green";
-    }*/
-    if(pos==null||b[pos]!=0){
-	return randomchoice(b);
+    var  z = bestMoves(moveValue);
+    if(z[0]==99){
+        z[0]=randomchoice(b);
     }
-    return pos;
-    //return w;
+    return z;
 }
-function correct(x,b){
-    var a = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-    
-    for(var i=0;i<42;i++){
-        for(var j=0;j<4;j++){
+function decideValue( a,  b){
+    var sum=0;
+    sum = sum+(a[3]*a[3]*16384);
+    sum = sum+(b[3]*b[3]*4096);
+    sum = sum+(a[2]*a[2]*1024);
+    sum = sum+(b[2]*b[2]*256);
+    sum = sum+(a[1]*a[1]*64);
+    sum = sum+(b[1]*b[1]*16);
+    sum = sum+(a[0]*a[0]*4);
+    sum = sum+(b[0]*b[0]);
+    return sum;
+}
+function correct5(x,b){
+    var a = [0];
+    for(var i=0;i<49;i++){
+	a[i] = [0,0,0,0,0];
+    }
+    for(var i=0;i<49;i++){
+        for(var j=0;j<5;j++){
             a[i][j] = x[i][j];
         }
     }
-    for(var j=0;j<4;j++){
-        var min = 1000;
-        for(var i=0;i<42;i++){
+    for(var j=0;j<5;j++){
+        var min = 100000;
+        for(var i=0;i<49;i++){
             if(b[i]==0){
                 if(min>x[i][j]){
                     min=x[i][j];
                 }
             }
         }
-        for(var i=0;i<42;i++){
+        for(var i=0;i<49;i++){
             if(b[i]==0){
                 a[i][j] = x[i][j]-min;
             }
@@ -434,73 +635,76 @@ function correct(x,b){
     }
     return a;
 }
-function choose(x){
+function bestMoves( x){
     var max=0;
-    for(var i=0;i<42;i++){
-        if(max<x[i]){
-            max=x[i];
-        }
+    var y = [0];
+    for(var i=0;i<49;i++){
+        y[i]=x[i];
     }
-    var p =[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    var sum=0;
-    for(var i=0;i<42;i++){
-        if(x[i]/max>0.5){
-            p[i]=x[i];
-        }
-        else{
-            p[i]=0;
-        }
-        sum+=p[i];
+    y.sort(function(a, b){return a-b});
+    max = y[48];
+    if(max==0){
+        var  t = [99];
+        return t;
     }
-    var y = Math.floor(Math.random()*sum);
-    sum=0;
-    var i=0;
-    for(i=0;i<42;i++){
-        sum+=p[i];
-        if(sum>y){
+    var n;
+    for(n=48;n>=0;n--){
+        var w = y[n]/max; 
+        if(w<=0.5){
             break;
         }
     }
-    //console.log(p);
-    return i;
-}
-function bestMoves(x){
-    var max=0;
-    for(var i=0;i<42;i++){
-        if(max<x[i]){
-            max=x[i];
-        }
-    }
-    var p =[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    var n=0;
-    for(var i=0;i<42;i++){
-        if(x[i]/max>0.5){
-            p[i]=x[i];
+    n = 48-n;
+    var q = 8;
+    var l=8;
+    if(n>q){
+        var m;
+        if(y[48-q]<y[49-q]){
+            m=y[49-q];
         }
         else{
-            p[i]=0;
+            m = y[48-q];
+            if(y[48]!=m){
+                var i;
+                for(i=49-q;i<49;i++){
+                    if(y[i]>m){
+                        break;
+                    }
+                }
+                l=49-i;
+                m=y[i];
+            }
         }
+        var p = [0];
+        var g=0;
+        for(var i=0;i<49&&g<l;i++){
+            if(x[i]>=m){
+                p[g]=i;
+                g++;
+            }
+        }
+        return p;
     }
-    var t=[0];
-    for(var i=0;i<42;i++){
-	if(p[i]!=0){
-	    t[n]=i;
-	    n++;
-	}
+    else{
+        var p = [0];
+        var g=0;
+        for(var i=0;i<49&&g<n;i++){
+            var w = x[i]/max; 
+            if(w>0.5){
+                p[g]=i;
+                g++;
+            }
+        }
+        return p;
     }
-    return t;
 }
 function block(A, q){
-    var blocks=[0,0,0,0];
-    
-    for(var i=0;i<4;i++){
-        blocks[i]=0;
-    }
-    for(var i=0;i<6;i++){
-        for(var j=0;j<=3;j++){
+    var blocks = [0,0,0,0,0];
+    for(var i=0;i<7;i++){
+        for(var j=0;j<3;j++){
             var u = i*7+j;
             var isblocked = false;
-            for(var k=0;k<4;k++){
+            for(var k=0;k<5;k++){
                 if(A[u+k]==q){
                     isblocked = true;
                     break;
@@ -508,7 +712,7 @@ function block(A, q){
             }
             var h =0;
             if(isblocked){
-                for(var k=0;k<4;k++){
+                for(var k=0;k<5;k++){
                     if(A[u+k]!=q&&A[u+k]!=0){
                         h++;
                     }
@@ -518,10 +722,10 @@ function block(A, q){
         }
     }
     for(var i=0;i<7;i++){
-        for(var j=0;j<=2;j++){
+        for(var j=0;j<3;j++){
             var u = j*7+i;
             var isblocked = false;
-            for(var k=0;k<4;k++){
+            for(var k=0;k<5;k++){
                 if(A[u+(k*7)]==q){
                     isblocked = true;
                     break;
@@ -529,7 +733,7 @@ function block(A, q){
             }
             var h =0;
             if(isblocked){
-                for(var k=0;k<4;k++){
+                for(var k=0;k<5;k++){
                     if(A[u+(k*7)]!=q&&A[u+(k*7)]!=0){
                         h++;
                     }
@@ -539,10 +743,10 @@ function block(A, q){
         }
     }
     for(var i=0;i<3;i++){
-        for(var j=0;j<4;j++){
+        for(var j=0;j<3;j++){
             var u = (i*7+j);
             var isblocked = false;
-            for(var k=0;k<4;k++){
+            for(var k=0;k<5;k++){
                 if(A[u+(k*8)]==q){
                     isblocked = true;
                     break;
@@ -550,7 +754,7 @@ function block(A, q){
             }
             var h =0;
             if(isblocked){
-                for(var k=0;k<4;k++){
+                for(var k=0;k<5;k++){
                     if(A[u+(k*8)]!=q&&A[u+(k*8)]!=0){
                         h++;
                     }
@@ -560,10 +764,10 @@ function block(A, q){
         }
     }
     for(var i=0;i<3;i++){
-        for(var j=3;j<7;j++){
+        for(var j=4;j<7;j++){
             var u = (i*7+j);
             var isblocked = false;
-            for(var k=0;k<4;k++){
+            for(var k=0;k<5;k++){
                 if(A[u+(k*6)]==q){
                     isblocked = true;
                     break;
@@ -571,7 +775,7 @@ function block(A, q){
             }
             var h =0;
             if(isblocked){
-                for(var k=0;k<4;k++){
+                for(var k=0;k<5;k++){
                     if(A[u+(k*6)]!=q&&A[u+(k*6)]!=0){
                         h++;
                     }
@@ -582,16 +786,13 @@ function block(A, q){
     }
     return blocks;
 }
-function attack(A,q){
-    var attacks = [0,0,0,0];
-    for(var i=0;i<4;i++){
-        attacks[i]=0;
-    }
-    for(var i=0;i<6;i++){
-        for(var j=0;j<=3;j++){
+function attack(A, q){
+    var attacks = [0,0,0,0,0];
+    for(var i=0;i<7;i++){
+        for(var j=0;j<3;j++){
             var u = i*7+j;
             var isblocked = false;
-            for(var k=0;k<4;k++){
+            for(var k=0;k<5;k++){
                 if(A[u+k]!=q&&A[u+k]!=0){
                     isblocked = true;
                     break;
@@ -599,22 +800,23 @@ function attack(A,q){
             }
             var h =0;
             if(!isblocked){
-                for(var k=0;k<4;k++){
+                for(var k=0;k<5;k++){
                     if(A[u+k]==q){
                         h++;
                     }
                 }
             }
+            
             if(h!=0){
                 attacks[h-1]++;
             }
         }
     }
     for(var i=0;i<7;i++){
-        for(var j=0;j<=2;j++){
+        for(var j=0;j<3;j++){
             var u = j*7+i;
             var isblocked = false;
-            for(var k=0;k<4;k++){
+            for(var k=0;k<5;k++){
                 if(A[u+(k*7)]!=q&&A[u+(k*7)]!=0){
                     isblocked = true;
                     break;
@@ -622,7 +824,7 @@ function attack(A,q){
             }
             var h =0;
             if(!isblocked){
-                for(var k=0;k<4;k++){
+                for(var k=0;k<5;k++){
                     if(A[u+(k*7)]==q){
                         h++;
                     }
@@ -634,10 +836,10 @@ function attack(A,q){
         }
     }
     for(var i=0;i<3;i++){
-        for(var j=0;j<4;j++){
+        for(var j=0;j<3;j++){
             var u = (i*7+j);
             var isblocked = false;
-            for(var k=0;k<4;k++){
+            for(var k=0;k<5;k++){
                 if(A[u+(k*8)]!=q&&A[u+(k*8)]!=0){
                     isblocked = true;
                     break;
@@ -645,23 +847,22 @@ function attack(A,q){
             }
             var h =0;
             if(!isblocked){
-                for(var k=0;k<4;k++){
+                for(var k=0;k<5;k++){
                     if(A[u+(k*8)]==q){
                         h++;
                     }
                 }
             }
-	    
             if(h!=0){
                 attacks[h-1]++;
             }
         }
     }
     for(var i=0;i<3;i++){
-        for(var j=3;j<7;j++){
+        for(var j=4;j<7;j++){
             var u = (i*7+j);
             var isblocked = false;
-            for(var k=0;k<4;k++){
+            for(var k=0;k<5;k++){
                 if(A[u+(k*6)]!=q&&A[u+(k*6)]!=0){
                     isblocked = true;
                     break;
@@ -669,7 +870,7 @@ function attack(A,q){
             }
             var h =0;
             if(!isblocked){
-                for(var k=0;k<4;k++){
+                for(var k=0;k<5;k++){
                     if(A[u+(k*6)]==q){
                         h++;
                     }
@@ -683,56 +884,92 @@ function attack(A,q){
     return attacks;
 }
 function winner(A){
-    for(var i=0;i<6;i++){
-        for(var j=0;j<=3;j++){
+    for(var i=0;i<7;i++){
+        for(var j=0;j<3;j++){
             var u = i*7+j;
-            if(A[u]==A[u+1]&&A[u+2]==A[u+3]&&A[u]==A[u+3]&&A[u]!=0){
-                winstreak [0] = (u);
-                winstreak [1] = (u+1);
-                winstreak [2] = (u+2);
-                winstreak [3] = (u+3);
-                return A[u];
+            var y = A[u];
+            if(y!=0){
+                var g = true;
+                for(var k=1;k<5;k++){
+                    if(A[u+k]!=y){
+                        g=false;
+                        break;
+                    }
+                }
+                if(g){
+                    for(var t=0;t<5;t++){
+                        winstreak[t]=(u+t);
+                    }
+                    return A[u];
+                }
             }
         }
     }
     for(var i=0;i<7;i++){
-        for(var j=0;j<=2;j++){
+        for(var j=0;j<3;j++){
             var u = j*7+i;
-            if(A[u]==A[u+7]&&A[u+14]==A[u+21]&&A[u]==A[u+14]&&A[u]!=0){
-                winstreak [0] = (u);
-                winstreak [1] = (u+7);
-                winstreak [2] = (u+14);
-                winstreak [3] = (u+21);
-                return A[u];
+            var y = A[u];
+            if(y!=0){
+                var g = true;
+                for(var k=1;k<5;k++){
+                    if(A[u+(k*7)]!=y){
+                        g=false;
+                        break;
+                    }
+                }
+                if(g){
+                    for(var t=0;t<5;t++){
+                        winstreak[t]=(u+(t*7));
+                    }
+                    return A[u];
+                }
             }
         }
     }
     for(var i=0;i<3;i++){
-        for(var j=0;j<4;j++){
+        for(var j=0;j<3;j++){
             var u = (i*7+j);
-            if(A[u+8]==A[u+16]&&A[u]==A[u+24]&&A[u]==A[u+8]&&A[u]!=0){
-                winstreak [0] = (u);
-                winstreak [1] = (u+8);
-                winstreak [2] = (u+16);
-                winstreak [3] = (u+24);
-                return A[u];
+            var y = A[u];
+            if(y!=0){
+                var g = true;
+                for(var k=1;k<5;k++){
+                    if(A[u+(k*8)]!=y){
+                        g=false;
+                        break;
+                    }
+                }
+                if(g){
+                    for(var t=0;t<5;t++){
+                        winstreak[t]=(u+(t*8));
+                    }
+                    return A[u];
+                }
             }
         }
     }
     for(var i=0;i<3;i++){
-        for(var j=3;j<7;j++){
+        for(var j=4;j<7;j++){
             var u = (i*7+j);
-            if(A[u]==A[u+6]&&A[u+12]==A[u+18]&&A[u]==A[u+12]&&A[u]!=0){
-                winstreak [0] = (u);
-                winstreak [1] = (u+6);
-                winstreak [2] = (u+12);
-                winstreak [3] = (u+18);
-                return A[u];
+            var y = A[u];
+            if(y!=0){
+                var g = true;
+                for(var k=1;k<5;k++){
+                    if(A[u+(k*6)]!=y){
+                        g=false;
+                        break;
+                    }
+                }
+                if(g){
+                    for(var t=0;t<5;t++){
+                        winstreak[t]=(u+(t*6));
+                    }
+                    return A[u];
+                }
             }
         }
     }
     var k = false;
-    for(var i=0;i<42;i++){
+    for(var i=0;i<49;i++){
         if(A[i]==0){
             k=true;
             break;
@@ -743,15 +980,47 @@ function winner(A){
     }
     return 0;
 }
-
+function decidelimit(){
+    var n = countmoves(convertBoard(origBoard));
+    if(n<6){
+	limit = 7;
+    }
+    else if(n<30){
+	limit = 8;	
+    }
+    else {
+	limit=9;	
+    }
+}
+function countmoves(x){
+    var n=0;	
+    for(var i=0;i<49;i++){
+	if(x[i]!=0){
+	    n++;		
+	}	
+    }
+    return n;
+}
 function giveHint(){
-    return findSpot(convertBoard(origBoard));  
+    recurse(convertBoard(origBoard));
+    var u;
+    if(!playerTurn){
+	u = choose(player2,2);
+    }
+    else {
+	u = choose(player1,1);
+    }
+    return u;
 }
 
 function showHint(){
-    if(h<3){
+    if(h<3&&!isHint){
+	var m = difficulty;
+	difficulty = 3;
+	isHint = true;
 	document.getElementById(giveHint()).style.backgroundColor = "#9ad333";
 	h++;
+	difficulty = m;
     }
 }
 
@@ -844,7 +1113,7 @@ function changeTheme(x){
 	document.getElementById("rbutton").style.color = "black";
 	document.getElementById("resetbutton").style.backgroundColor = "#999999";
 	document.getElementById("resetbutton").style.color = "black";
-	document.getElementById("hint").style.backgroundColor = "#999999";
+	document.getElementById("hint").style.backgroundColor = "999999";
 	document.getElementById("hint").style.color = "black";
 	
 	var t = document.getElementsByClassName("diff");

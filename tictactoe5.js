@@ -6,6 +6,7 @@ var difficulty=3;
 var aiScore = 0;
 var huScore = 0;
 var ties = 0;
+var isHint = false;
 const huPlayer = 'O';
 const aiPlayer = 'X';
 var depth=0;
@@ -40,7 +41,7 @@ function startGame(){
 }
 
 function turnClick(square){
-    
+    isHint = false;
     for(var i = 0; i<cells.length; i++){
 	cells[i].removeEventListener('click', turnClick, false);
     }
@@ -683,7 +684,6 @@ function check(b,p){
     return 99;
 }
 function choose(x,p){
-    
     var numwin=0;
     var numdraw=0;
     var numloss=0;
@@ -840,21 +840,23 @@ function countmove(x){
 
 function giveHint(){
     decidelimit(convertBoard(origBoard));
-    var g = difficulty;
-    difficulty = 3;
     recurse(convertBoard(origBoard));
     if(playerTurn)
 	return choose(player1,1);
     else
 	return choose(player2,2);
-    difficulty = g;
 }
 
 function showHint(){
-    if(h<3){
+    if(h<3&&!isHint){
+	var m = difficulty;
+	difficulty = 3;
+	isHint = true;
 	document.getElementById(giveHint()).style.backgroundColor = "#9ad333";
 	h++;
+	difficulty = m;
     }
+
 }
 
 function changeTheme(x){

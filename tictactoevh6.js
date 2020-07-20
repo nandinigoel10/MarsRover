@@ -7,15 +7,15 @@ var ties = 0;
 const Player1 = 'X';
 const Player2 = 'O';
 var winstreak = [0,0,0,0];
-var player1 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var player2 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var player1 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var player2 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 const cells = document.querySelectorAll('.cell');
 startGame();
 
 function startGame(){
     document.querySelector(".endgame").style.display = "none";
-    origBoard = Array.from(Array(42).keys());
+    origBoard = Array.from(Array(49).keys());
     for(var i =0; i<cells.length; i++){
 	cells[i].innerText='';
 	cells[i].style.removeProperty('background-color');
@@ -62,7 +62,7 @@ function checkWin(board, player){
 }
 
 function gameOver(gameWon){
-    for(var i=0; i<4; i++){
+    for(var i=0; i<5; i++){
 	var l =document.getElementById('tic').rows[Math.floor(winstreak[i]/7)].cells;
 	l[winstreak[i]%7].style.backgroundColor = gameWon.player == Player1 ? "blue" : "red";
     }
@@ -108,12 +108,20 @@ function resetLeaderBoard(){
 }
 
 function convertBoard(origBoard){
-    var newBoard = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    for(var i=0; i<42; i++){
-	if(origBoard[i]==='X'){
+    var newBoard =[0];
+    if(playerTurn){
+	var x = 'X';
+	var o = 'O';
+    }
+    else{
+	var x = 'O';
+	var o = 'X';
+    }
+    for(var i=0; i<49; i++){
+	if(origBoard[i]===x){
 	    newBoard[i]=2;
 	}
-	else if(origBoard[i]==='O'){
+	else if(origBoard[i]===o){
 	    newBoard[i]=1;
 	}
 	else
@@ -121,7 +129,6 @@ function convertBoard(origBoard){
     }
     return newBoard;
 }
-
 
 function checkTie(){
     if(winner(convertBoard(origBoard))===4){
@@ -140,56 +147,92 @@ function checkTie(){
 }
 
 function winner(A){
-    for(var i=0;i<6;i++){
-        for(var j=0;j<=3;j++){
+    for(var i=0;i<7;i++){
+        for(var j=0;j<3;j++){
             var u = i*7+j;
-            if(A[u]==A[u+1]&&A[u+2]==A[u+3]&&A[u]==A[u+3]&&A[u]!=0){
-                winstreak [0] = (u);
-                winstreak [1] = (u+1);
-                winstreak [2] = (u+2);
-                winstreak [3] = (u+3);
-                return A[u];
+            var y = A[u];
+            if(y!=0){
+                var g = true;
+                for(var k=1;k<5;k++){
+                    if(A[u+k]!=y){
+                        g=false;
+                        break;
+                    }
+                }
+                if(g){
+                    for(var t=0;t<5;t++){
+                        winstreak[t]=(u+t);
+                    }
+                    return A[u];
+                }
             }
         }
     }
     for(var i=0;i<7;i++){
-        for(var j=0;j<=2;j++){
+        for(var j=0;j<3;j++){
             var u = j*7+i;
-            if(A[u]==A[u+7]&&A[u+14]==A[u+21]&&A[u]==A[u+14]&&A[u]!=0){
-                winstreak [0] = (u);
-                winstreak [1] = (u+7);
-                winstreak [2] = (u+14);
-                winstreak [3] = (u+21);
-                return A[u];
+            var y = A[u];
+            if(y!=0){
+                var g = true;
+                for(var k=1;k<5;k++){
+                    if(A[u+(k*7)]!=y){
+                        g=false;
+                        break;
+                    }
+                }
+                if(g){
+                    for(var t=0;t<5;t++){
+                        winstreak[t]=(u+(t*7));
+                    }
+                    return A[u];
+                }
             }
         }
     }
     for(var i=0;i<3;i++){
-        for(var j=0;j<4;j++){
+        for(var j=0;j<3;j++){
             var u = (i*7+j);
-            if(A[u+8]==A[u+16]&&A[u]==A[u+24]&&A[u]==A[u+8]&&A[u]!=0){
-                winstreak [0] = (u);
-                winstreak [1] = (u+8);
-                winstreak [2] = (u+16);
-                winstreak [3] = (u+24);
-                return A[u];
+            var y = A[u];
+            if(y!=0){
+                var g = true;
+                for(var k=1;k<5;k++){
+                    if(A[u+(k*8)]!=y){
+                        g=false;
+                        break;
+                    }
+                }
+                if(g){
+                    for(var t=0;t<5;t++){
+                        winstreak[t]=(u+(t*8));
+                    }
+                    return A[u];
+                }
             }
         }
     }
     for(var i=0;i<3;i++){
-        for(var j=3;j<7;j++){
+        for(var j=4;j<7;j++){
             var u = (i*7+j);
-            if(A[u]==A[u+6]&&A[u+12]==A[u+18]&&A[u]==A[u+12]&&A[u]!=0){
-                winstreak [0] = (u);
-                winstreak [1] = (u+6);
-                winstreak [2] = (u+12);
-                winstreak [3] = (u+18);
-                return A[u];
+            var y = A[u];
+            if(y!=0){
+                var g = true;
+                for(var k=1;k<5;k++){
+                    if(A[u+(k*6)]!=y){
+                        g=false;
+                        break;
+                    }
+                }
+                if(g){
+                    for(var t=0;t<5;t++){
+                        winstreak[t]=(u+(t*6));
+                    }
+                    return A[u];
+                }
             }
         }
     }
     var k = false;
-    for(var i=0;i<42;i++){
+    for(var i=0;i<49;i++){
         if(A[i]==0){
             k=true;
             break;

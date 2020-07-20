@@ -1,47 +1,47 @@
 h1{
-    font-family:"Ani";
+    font-family:"fontin";
     color:white;
     text-align:center;
-    margin-left:380px;
-    margin:40px 350px;
+    margin-left:29.37vw;
+    font-size: 6vmin;
     font-variant: small-caps;
     background-color: #8c8c8c;
-    width:550px;  
+    width:42.51vw;  
 }
 
 .button{
     background-color: #234723;
     border: none;
-    font-family: "Ani";
+    font-family: "fontin";
     color: white;
-    padding: 20px 34px;
+    padding: 3vh 1.54vw;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 20px;
+    font-size: 3vmin;
     margin: 15px 1px;
-    margin-left: 100px;
+    margin-left:7.72vw;
     cursor: pointer;
-    width: 110px;
-    height: 40px;
+    width:8.5vw;
+    height:5.97vh;
     opacity:1.0;
 }
 
 .backbutton{
     background-color: #234723;
     border: none;
-    font-family: "Ani";
+    font-family: "fontin";
     color: white;
-    padding: 20px 34px;
+    padding: 3vh 1.54vw;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 15px;
-    margin: 20px 1px;
-    margin-left: 555px;
+    font-size: 2.25vmin;
+    margin-top: 12vh;
+    margin-left:42.89vw;
     cursor: pointer;
-    width: 50px;
-    height: 20px; 
+    width:3.86vw;
+    height:2.98vh; 
 }
 
 .button:hover, .backbutton:hover{
@@ -49,9 +49,8 @@ h1{
 }
 body {
   background-image: url('rover.png');
+  background-size: 100vh 100vw;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
 }
-
-
