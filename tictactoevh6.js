@@ -1,6 +1,9 @@
 var n;
 var playerTurn = false;
 var origBoard;
+aiScore = 0;
+huScore = 0;
+ties = 0;
 var p1Score = 0;
 var p2Score = 0;
 var ties = 0;
