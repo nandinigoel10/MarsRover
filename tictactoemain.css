@@ -1,0 +1,56 @@
+#b1{
+    background-color: #234723;
+    
+    border: none;
+    font-family: "Ani";
+    color: white;
+    padding: 20px 34px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    margin: 30px 1px;
+    margin-left: 404px;
+    cursor: pointer;
+    width: 110px;
+    height: 40px;
+}
+#b2{
+    background-color: #234723;
+    border: none;
+    font-family: "Ani";
+    color: white;
+    padding: 20px 34px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    margin: 30px 1px;
+    margin-left: 100px;
+    cursor: pointer;
+    width:110px;
+    height:40px;
+}
+
+#heading{
+    font-family:"Ani";
+    color:white;
+    text-align:center;
+    margin-left:435px;
+    margin:40px 435px;
+    font-variant: small-caps;
+    background-color: #8c8c8c;
+    width:400px;
+  
+}
+#b1:hover, #b2:hover{
+    background-color:#286743;
+}
+body {
+  background-image: url('rover.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+
