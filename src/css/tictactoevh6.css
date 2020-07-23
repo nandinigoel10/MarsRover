@@ -49,7 +49,7 @@ body{
     display: inline-block;
     font-size: 3vmin;
     padding-top:2.24vh;
-    margin-left:8vw;
+    margin-left:8.5vw;
     cursor: pointer;
     position:fixed;
     font-family:"fontin";
@@ -131,11 +131,11 @@ p{
     font-size: 3.74vmin;
 }
 #lheading{
-    margin-left:76.2vw;
+    margin-left:74.89vw;
     margin-top:22.42vh;
 }
 #sheading{
-    margin-left:7.7vw;
+    margin-left:5.64vw;
     margin-top:22.42vh;
 }
 
