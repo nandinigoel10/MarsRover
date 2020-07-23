@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title></title>
-    <link rel="stylesheet" href="src/css/tictactoe5.css">
+    <link rel="stylesheet" href="tictactoe5.css">
   </head>
   <body>
     <div id = "dboard">
@@ -70,12 +70,12 @@
     <button onClick="resetLeaderBoard()" id="resetbutton">Reset</button>
 
     <div class="difficulty">
-      <button onClick="setDiff(1)" class="diff">EASY</button>
-      <button onClick="setDiff(3)" class="diff">MEDIUM</button>
-      <button onClick="setDiff(4)" class="diff">HARD</button>
-      <button onClick="setDiff(100)" class="diff">UNBEATABLE</button>
+      <button onClick="setDiff(0)" class="diff">EASY</button>
+      <button onClick="setDiff(1)" class="diff">MEDIUM</button>
+      <button onClick="setDiff(2)" class="diff">HARD</button>
+      <button onClick="setDiff(3)" class="diff">UNBEATABLE</button>
     </div>
-    <a href="src/html/index.html" class="mbutton">MAIN MENU</a>
+    <a href="tictactoemain.html" class="mbutton">MAIN MENU</a>
     <div class="theme">
       <button id="k" class="diff">THEMES</button>
       <div class="dropdown">
@@ -90,7 +90,7 @@
     </div>
     <button onClick="showHint()" id="hint">Hint</button>
     <p id="maxhint">Maximum 3 hints!</p>
-    <script src="src/js/tictactoe5.js">
+    <script src="tictactoe5.js">
     </script>
   </body>
 </html>
