@@ -1,8 +1,5 @@
 var origBoard;
 var n;
-var aiScore = 0;
-var huScore = 0;
-var ties = 0;
 var playerTurn = false;
 var p1Score = '0';
 var p2Score = '0';

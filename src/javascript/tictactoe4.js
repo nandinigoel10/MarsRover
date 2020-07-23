@@ -7,6 +7,8 @@ var aiScore = '0';
 var huScore = '0';
 var ties = '0';
 var depth=0;
+var isHint = false;
+var h=0;
 var player1= [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var player2= [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 const huPlayer = 'O';
@@ -51,6 +53,7 @@ function startGame(){
 }
 
 function turnClick(square){
+    isHint = false;
     for(var i =0; i<cells.length; i++){
 	cells[i].style.removeProperty('background-color'); }
     if(typeof origBoard[square.target.id] == 'number'){
@@ -532,21 +535,22 @@ function countmove(x){
 }
 
 function giveHint(){
-    var h = difficulty;
-    difficulty = 3;
     decidelimit(convertBoard(origBoard));
     recurse(convertBoard(origBoard));
     if(playerTurn)
 	return choose(player1,1);
     else
 	return choose(player2,2);
-    difficulty = h;
 }
 
 function showHint(){
-    if(h<3){
+    if(h<3&&!isHint){
+	var m = difficulty;
+	difficulty = 3;
+	isHint = true;
 	document.getElementById(giveHint()).style.backgroundColor = "#9ad333";
 	h++;
+	difficulty = m;
     }
 }
 
