@@ -48,7 +48,7 @@ h1{
     background-color:#286743;
 }
 body {
-  background-image: url('rover.png');
+  background-image: url('../../images/rover.jpg');
   background-size: 100vh 100vw;
   background-repeat: no-repeat;
   background-attachment: fixed;

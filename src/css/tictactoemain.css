@@ -47,7 +47,7 @@
     background-color:#286743;
 }
 body {
-  background-image: url('rover.png');
+  background-image: url('../../images/rover.jpg');
   background-repeat: no-repeat;
   background-size: 100vh 100vw;
   background-attachment: fixed;

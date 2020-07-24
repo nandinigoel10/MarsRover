@@ -232,7 +232,7 @@ function winner(A){
 
 function changeTheme(x){
     if(x==1){
-	document.body.style.backgroundImage = "url('rovertic.png')";
+	document.body.style.backgroundImage = "url('../../images/rovertic.jpg')";
 	var elements = document.querySelectorAll('.cell');
 	for (var i = 0; i < elements.length; i++) {
 	    elements[i].style.borderColor="white";
@@ -268,7 +268,7 @@ function changeTheme(x){
 	document.getElementById("dboard").style.backgroundColor = "#444444";
     }
     if(x==2){
-	document.body.style.backgroundImage = "url('bg2.png')";
+	document.body.style.backgroundImage = "url('../../images/bg2.jpg')";
 	var elements = document.querySelectorAll('.cell');
 	for (var i = 0; i < elements.length; i++) {
 	    elements[i].style.borderColor="black";
@@ -304,7 +304,7 @@ function changeTheme(x){
     }
     
     if(x==3){
-	document.body.style.backgroundImage = "url('bg3.png')";
+	document.body.style.backgroundImage = "url('../../images/bg3.jpg')";
 	var elements = document.querySelectorAll('.cell');
 	for (var i = 0; i < elements.length; i++) {
 	    elements[i].style.borderColor="white";
