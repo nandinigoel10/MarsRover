@@ -49,7 +49,7 @@ body{
     display: inline-block;
     font-size: 3vmin;
     padding-top:2.24vh;
-    margin-left:8.5vw;
+    margin-left:8vw;
     cursor: pointer;
     position:fixed;
     font-family:"fontin";
@@ -152,18 +152,18 @@ p{
     color:#ffffff;
     text-shadow: 2px 2px #000000;
     font-family:"fontin";
-    font-size: 3.74vmin;
+    font-size: 1.4vw;
 }
 #lheading{
-    margin-left:74.89vw;
+    margin-left:78.2vw;
     margin-top:22.42vh;
 }
 #dheading{
-    margin-left:9.42vw;
+    margin-left:12vw;
     margin-top:4.48vh;
 }
 #sheading{
-    margin-left:5.64vw;
+    margin-left:9.8vw;
     margin-top:38.86vh;
 }
 
