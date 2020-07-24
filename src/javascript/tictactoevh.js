@@ -1,3 +1,5 @@
+var aiScore = '0';
+var huScore = '0';
 var origBoard;
 var n;
 var playerTurn = false;
