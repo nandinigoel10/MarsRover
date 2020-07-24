@@ -61,9 +61,9 @@ function resetLeaderBoard(){
     p1Score = 0;
     p2Score = 0;
     var x=document.getElementById('leaderboard').rows[1].cells;
-    x[2].innerHTML=p1Score;
+    x[2].innerHTML=p2Score;
     var x=document.getElementById('leaderboard').rows[1].cells;
-    x[0].innerHTML=p2Score;
+    x[0].innerHTML=p1Score;
     var x=document.getElementById('leaderboard').rows[1].cells;
     x[1].innerHTML=ties;
 }
